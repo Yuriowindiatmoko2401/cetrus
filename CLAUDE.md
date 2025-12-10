@@ -95,8 +95,49 @@ PYTHONPATH="./:${PYTHONPATH}" python DATSR/datsr/train.py -opt "DATSR/options/tr
 │   ├── options/             # YAML configurations
 │   ├── experiments/         # Model checkpoints and results
 │   └── datasets/            # Dataset files and metadata
+├── streamlit_app/           # Web UI interface
+│   ├── app.py              # Main Streamlit application
+│   ├── config/             # UI and model configuration
+│   ├── core/               # Model loading, image processing, inference
+│   ├── components/         # UI components (upload, viewer, controls)
+│   └── requirements.txt    # Streamlit dependencies
 └── datasets-root/           # Raw training datasets
 ```
+
+## Streamlit Web Interface
+
+### New Feature: User-Friendly Web UI
+A comprehensive Streamlit-based web interface has been added to make DATSR accessible through a browser.
+
+### Quick Start with Web UI
+```bash
+# Activate conda environment (recommended: oldproj)
+conda activate oldproj
+
+# Navigate to streamlit app
+cd streamlit_app/
+
+# Install Streamlit dependencies
+pip install -r requirements.txt
+
+# Run the web application
+streamlit run app.py
+```
+
+### Web UI Features
+- **🖼️ Dual Image Upload**: Upload low-resolution input and reference images
+- **🤖 Model Selection**: Choose between MSE (reconstruction) and GAN (perceptual) models
+- **⚡ GPU Acceleration**: Automatic GPU detection with CPU fallback
+- **📊 Interactive Results**: Side-by-side comparison with zoom controls
+- **💾 Download Options**: Individual images or complete ZIP packages
+- **🎨 User-Friendly Interface**: Clean design with progress indicators
+
+### Web UI Architecture
+- **Model Integration**: Seamless integration with existing DATSR models
+- **Image Preprocessing**: Adapted from RefCUFEDDataset for single image processing
+- **Cached Model Loading**: Efficient memory management with model caching
+- **Error Handling**: Comprehensive validation and user feedback
+- **Responsive Design**: Works across different screen sizes
 
 ## Development Notes
 
