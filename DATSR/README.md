@@ -38,6 +38,7 @@ Reference-based image super-resolution (RefSR) aims to exploit auxiliary referen
 1. [Results](#Results)
 1. [Citation](#Citation)
 1. [License and Acknowledgement](#License-and-Acknowledgement)
+1. [Troubleshooting](#Troubleshooting)
 
 
 ## TODO
@@ -58,6 +59,7 @@ Following commands will download [pretrained models](https://github.com/caojiezh
    git clone https://github.com/caojiezhang/DATSR.git
    cd DATSR
    conda install pytorch=1.7.1 torchvision cudatoolkit=10.1 -c pytorch
+   pip install timm==0.6.12
    ```
 
    **Install mmcv-full (required for mmcv.ops and deformable convolution):**
@@ -93,6 +95,14 @@ Following commands will download [pretrained models](https://github.com/caojiezh
    ```bash
    python -c "from mmcv.ops import DeformConv2d; print('mmcv.ops working correctly!')"
    ```
+
+   **Important Note: timm Version Compatibility**
+   - Use `timm==0.6.12` for PyTorch 1.7.1 compatibility
+   - Newer versions of timm (>=1.0.0) require `torch.fx` which is not available in PyTorch 1.7.1
+   - If you encounter `AttributeError: module 'torch' has no attribute 'fx'`, downgrade timm:
+     ```bash
+     pip install timm==0.6.12
+     ```
 
 
 ## Dataset 
@@ -147,6 +157,35 @@ For more results on the benchmarks, you can directly download our DATSR results 
     year={2022}
   }
   ```
+
+## Troubleshooting
+
+### Common Issues and Solutions
+
+#### timm Import Error
+**Error**: `AttributeError: module 'torch' has no attribute 'fx'`
+
+**Cause**: Version incompatibility between PyTorch 1.7.1 and newer timm versions (>=1.0.0)
+
+**Solution**:
+```bash
+pip install timm==0.6.12
+```
+
+**Explanation**: PyTorch 1.7.1 does not include the `torch.fx` module that newer timm versions require. Version 0.6.12 is the last version compatible with PyTorch 1.7.1.
+
+#### mmcv Installation Issues
+**Error**: Import errors related to deformable convolution operations
+
+**Solution**: Ensure you have the correct mmcv-full version installed:
+```bash
+pip install mmcv-full==1.3.17 -f https://download.openmm.org/mmcv/dist/cu101/torch1.7.0/index.html
+```
+
+#### CUDA Compatibility
+Make sure your CUDA version matches the installation:
+- CUDA 10.0/10.1 for PyTorch 1.7.1
+- Adjust mmcv-full installation URL accordingly for your CUDA version
 
 ## License and Acknowledgement
 This project is released under the CC-BY-NC license. We refer to codes from [C2-Matching](https://github.com/yumingj/C2-Matching) and [BasicSR](https://github.com/xinntao/BasicSR). Thanks for their awesome works. The majority of DATSR is licensed under CC-BY-NC, however portions of the project are available under separate license terms: C2-Matching is licensed under the MIT License, BasicSR are licensed under the Apache 2.0 license.
