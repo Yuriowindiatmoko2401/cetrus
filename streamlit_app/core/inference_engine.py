@@ -70,40 +70,34 @@ class InferenceEngine:
             if progress_callback:
                 progress_callback("Running inference...", 0.3)
 
-            # Set model to evaluation mode
-            model.eval()
-
-            # Run inference
+            # Run inference using proper DATSR pattern
             start_time = time.time()
 
-            with torch.no_grad():
-                # Extract features (following DATSR test procedure)
-                if hasattr(model, 'net_extractor') and hasattr(model, 'net_map'):
-                    # Extract features from reference and bicubic-upsampled input
-                    features = model.net_extractor(lr_up_tensor, ref_tensor)
+            # Prepare data dictionary for DATSR model
+            data = {
+                'img_in_lq': lr_tensor,
+                'img_ref': ref_tensor,
+                'img_in_up': lr_up_tensor
+            }
 
-                    if progress_callback:
-                        progress_callback("Generating correspondence map...", 0.6)
+            if progress_callback:
+                progress_callback("Preparing model data...", 0.4)
 
-                    # Generate flow correspondence map and features
-                    pre_offset, img_ref_feat = model.net_map(features, ref_tensor)
+            # Feed data to model and run inference
+            model.feed_data(data)
 
-                    if progress_callback:
-                        progress_callback("Generating super-resolution...", 0.8)
+            if progress_callback:
+                progress_callback("Running inference...", 0.6)
 
-                    # Main restoration using LR input, offset, and reference features
-                    if hasattr(model, 'net_g'):
-                        output = model.net_g(lr_tensor, pre_offset, img_ref_feat)
-                    else:
-                        # Fallback for different model structures
-                        output = model.test(lr_tensor, ref_tensor, pre_offset, img_ref_feat)
-                else:
-                    # Direct inference if model has different structure
-                    if hasattr(model, 'test'):
-                        output = model.test(lr_tensor, ref_tensor)
-                    else:
-                        # Try direct forward pass
-                        output = model(lr_tensor, ref_tensor)
+            # Use DATSR's test() method for inference
+            model.test()
+
+            if progress_callback:
+                progress_callback("Extracting results...", 0.8)
+
+            # Get results from model
+            visuals = model.get_current_visuals()
+            output = visuals['rlt']
 
             inference_time = time.time() - start_time
 
