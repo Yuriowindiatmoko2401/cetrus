@@ -77,7 +77,8 @@ class InferenceEngine:
             data = {
                 'img_in_lq': lr_tensor,
                 'img_ref': ref_tensor,
-                'img_in_up': lr_up_tensor
+                'img_in_up': lr_up_tensor,
+                'img_in': lr_up_tensor  # Add missing key - use bicubic upsampled as ground truth substitute
             }
 
             if progress_callback:
